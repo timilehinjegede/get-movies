@@ -1,43 +1,89 @@
+import 'dart:math' as math;
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get_movies/core/models/models.dart';
 import 'package:get_movies/utils/utils.dart';
 
 class MovieCard extends StatelessWidget {
+  final Movie movie;
+  final VoidCallback onTap;
+
+  const MovieCard({
+    Key? key,
+    required this.movie,
+    required this.onTap,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.only(right: 15.0),
+    return InkWell(
+      onTap: onTap,
+      highlightColor: Colors.transparent,
+      splashColor: Colors.transparent,
       child: Container(
         height: 280,
         width: 140,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              height: 210,
-              decoration: BoxDecoration(
-                color: greyColor,
-                borderRadius: BorderRadius.circular(10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                height: 210,
+                decoration: BoxDecoration(
+                  color: greyColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: CachedNetworkImage(
+                  imageUrl:
+                      'https://image.tmdb.org/t/p/original${movie.posterPath!}',
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      Center(
+                    child: CircularProgressIndicator(
+                      value: downloadProgress.progress,
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Center(
+                    child: Icon(
+                      Icons.error,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                  ),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             YBox(5),
             Text(
-              'Movie Name',
+              movie.title!,
+              overflow: TextOverflow.ellipsis,
             ),
             YBox(5),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Icon(
-                  Icons.star,
-                  color: yellowColor,
-                  size: 14,
-                ),
+                for (int i = 1; i < (movie.voteAverage / 2.floor()); i++)
+                  Icon(
+                    Icons.star,
+                    color: yellowColor,
+                    size: 14,
+                  ),
+                movie.voteAverage / 2.floor() == 0
+                    ? Icon(
+                        Icons.star,
+                        color: yellowColor,
+                        size: 14,
+                      )
+                    : SizedBox.shrink(),
                 XBox(2),
                 Text(
-                  'Rate',
+                  '${(movie.voteAverage / 2).floor().toString()}.0',
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -47,10 +93,12 @@ class MovieCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  '2H 34M',
+                  movie.releaseDate!,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  'Comedy',
+                  movie.originalLanguage!,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

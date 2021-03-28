@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_movies/core/controllers/controllers.dart';
 import 'package:get_movies/utils/utils.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   // put your controllers here
+  Get.put<MovieController>(
+    MovieController(),
+  );
   runApp(MyApp());
 }
 

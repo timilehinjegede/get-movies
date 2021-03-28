@@ -1,120 +1,111 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_movies/core/models/models.dart';
 import 'package:get_movies/ui/widgets/widgets.dart';
 import 'package:get_movies/utils/utils.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
+  final Movie movie;
+
+  const MovieDetailsScreen({Key? key, required this.movie}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverPersistentHeader(
-            delegate: MySliverAppBar(expandedHeight: 250),
-            pinned: true,
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Column(
-                  children: <Widget>[
-                    YBox(100),
-                    _buildContent(),
-                  ],
-                )
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: Get.height * 0.5,
+            child: Stack(
+              children: [
+                Container(
+                  height: Get.height * 0.4,
+                  color: greyColor,
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        'https://image.tmdb.org/t/p/original${movie.backdropPath!}',
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => Center(
+                      child: CircularProgressIndicator(
+                        value: downloadProgress.progress,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Center(
+                      child: Icon(
+                        Icons.error,
+                        color: Colors.red,
+                        size: 30,
+                      ),
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  top: 40,
+                  left: 20,
+                  child: InkWell(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      height: 35,
+                      width: 35,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black,
+                      ),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: whiteColor,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 30,
+                  child: Container(
+                    height: 220,
+                    width: 150,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        height: 210,
+                        decoration: BoxDecoration(
+                          color: greyColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              'https://image.tmdb.org/t/p/original${movie.posterPath!}',
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                              value: downloadProgress.progress,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Center(
+                            child: Icon(
+                              Icons.error,
+                              color: Colors.red,
+                              size: 30,
+                            ),
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          _buildMovieIntroduction(),
-          YBox(20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 15.0,
-                ),
-                child: Text(
-                  'Casts',
-                ),
-              ),
-              YBox(5),
-              Container(
-                height: 150,
-                width: double.infinity,
-                child: ListView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 15,
-                  ),
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    CastCard(),
-                    XBox(15),
-                    CastCard(),
-                    XBox(15),
-                    CastCard(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          YBox(20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 15.0,
-                ),
-                child: Text(
-                  'Trailers',
-                ),
-              ),
-              YBox(5),
-              Container(
-                height: 160,
-                width: double.infinity,
-                child: ListView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 15,
-                  ),
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    TrailerCard(),
-                    XBox(15),
-                    TrailerCard(),
-                    XBox(15),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMovieIntroduction() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(15, 25, 15, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Introduction',
-          ),
-          YBox(5),
-          Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id varius dolor. Sed ornare justo sit amet arcu tempus laoreet. Integer vitae turpis non magna aliquam pretium. Pellentesque laoreet placerat diam tincidunt facilisis. Nulla commodo maximus odio luctus vestibulum. Nunc tempor, tellus ac laoreet lacinia, nulla nisl eleifend nisl, pulvinar.',
+          YBox(25),
+          Expanded(
+            child: _MovieInformation(
+              movie: movie,
+            ),
           ),
         ],
       ),
@@ -122,79 +113,106 @@ class MovieDetailsScreen extends StatelessWidget {
   }
 }
 
-class MySliverAppBar extends SliverPersistentHeaderDelegate {
-  final double expandedHeight;
+class _MovieInformation extends StatelessWidget {
+  final Movie movie;
 
-  MySliverAppBar({
-    required this.expandedHeight,
-  });
+  const _MovieInformation({Key? key, required this.movie}) : super(key: key);
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final dims = Dims(context);
-    return Stack(
-      clipBehavior: Clip.none,
-      fit: StackFit.expand,
-      children: <Widget>[
-        Container(
-          color: greyColor,
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      children: [
+        Text(
+          'Original Title',
         ),
-        Center(
-          child: Opacity(
-            opacity: shrinkOffset / expandedHeight,
-            child: Text(
-              "Movie Title",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
+        Text(
+          movie.originalTitle!,
+        ),
+        YBox(5),
+        Text(
+          'Overview',
+        ),
+        Text(
+          movie.overview!,
+        ),
+        YBox(5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Movie ID',
+            ),
+            Text(
+              movie.id.toString(),
+            ),
+          ],
+        ),
+        YBox(5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Release Date',
+            ),
+            Text(
+              movie.releaseDate!,
+            ),
+          ],
+        ),
+        YBox(5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Original Language',
+            ),
+            Text(
+              movie.originalLanguage!,
+            ),
+          ],
+        ),
+        YBox(5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Total Vote Average',
+            ),
+            Text(
+              movie.voteAverage!.toString(),
+            ),
+          ],
+        ),
+        YBox(5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Ratings',
+            ),
+            Spacer(),
+            for (int i = 1; i < (movie.voteAverage / 2.floor()); i++)
+              Icon(
+                Icons.star,
+                color: yellowColor,
+                size: 14,
               ),
+            movie.voteAverage / 2.floor() == 0
+                ? Icon(
+                    Icons.star,
+                    color: yellowColor,
+                    size: 14,
+                  )
+                : SizedBox.shrink(),
+            XBox(2),
+            Text(
+              '${(movie.voteAverage / 2).floor().toString()}.0',
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ),
-        Positioned(
-          top: expandedHeight - shrinkOffset + 20,
-          left: dims.screenWidth(extent: 0.6),
-          child: Opacity(
-            opacity: (1 - shrinkOffset / expandedHeight),
-            child: MovieSummary(),
-          ),
-        ),
-        Positioned(
-          top: expandedHeight / 1.8 - shrinkOffset,
-          left: dims.screenWidth(extent: 0.05),
-          child: Opacity(
-            opacity: (1 - shrinkOffset / expandedHeight),
-            child: Card(
-              elevation: 10,
-              child: Container(
-                height: 220,
-                width: 150,
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 30,
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back,
-              color: whiteColor,
-            ),
-          ),
+          ],
         ),
       ],
     );
   }
-
-  @override
-  double get maxExtent => expandedHeight;
-
-  @override
-  double get minExtent => 90;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 }

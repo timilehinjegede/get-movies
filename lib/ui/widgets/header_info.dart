@@ -6,13 +6,13 @@ import 'package:get_movies/utils/utils.dart';
 class HeaderInfo extends StatelessWidget {
   final String title;
   final String subTitle;
-  final String movieId;
+  final VoidCallback onPressed;
 
   const HeaderInfo({
     Key? key,
     required this.title,
     required this.subTitle,
-    required this.movieId,
+    required this.onPressed,
   }) : super(key: key);
 
   @override
@@ -30,11 +30,7 @@ class HeaderInfo extends StatelessWidget {
           subTitle,
         ),
         trailing: IconButton(
-          onPressed: () {
-            Get.to(
-              () => ViewMoreMoviesScreen(),
-            );
-          },
+          onPressed: onPressed,
           splashRadius: 20,
           padding: EdgeInsets.zero,
           icon: Icon(

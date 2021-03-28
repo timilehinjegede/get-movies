@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:get_movies/core/models/models.dart';
 import 'package:get_movies/ui/screens/home_screen.dart';
 import 'package:get_movies/ui/screens/movie_details_screen.dart';
 import 'package:get_movies/ui/screens/splash_screen.dart';
@@ -22,11 +23,16 @@ class GetMoviesRoutes {
     ),
     GetPage(
       name: viewMoreMoviesRoute,
-      page: () => ViewMoreMoviesScreen(),
+      page: () => ViewMoreMoviesScreen(
+        movieList: [],
+        movieCategory: '',
+      ),
     ),
     GetPage(
       name: movieDetailsRoute,
-      page: () => MovieDetailsScreen(),
+      page: () => MovieDetailsScreen(
+        movie: Movie(),
+      ),
     ),
   ];
 }
