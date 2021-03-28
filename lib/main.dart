@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:get_movies/ui/screens/all_movies_screen.dart';
+import 'package:get/get.dart';
+import 'package:get_movies/utils/utils.dart';
 
-void main() {
+void main() async {
+  // put your controllers here
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Get Movies',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: AllMoviesScreen(),
+      theme: GetMoviesTheme.getMoviesThemeData,
+      debugShowCheckedModeBanner: false,
+      defaultTransition: Transition.fadeIn,
+      getPages: GetMoviesRoutes.routes,
+      initialRoute: splashRoute,
     );
   }
 }
