@@ -1,21 +1,4 @@
 import 'package:flutter/material.dart';
-
-class Dims {
-  final BuildContext context;
-
-  Dims(this.context);
-
-  MediaQueryData get mediaQuery => MediaQuery.of(context);
-
-  double screenHeight({double extent = 1}) => mediaQuery.size.height * extent;
-
-  double screenWidth({double extent = 1}) => mediaQuery.size.width * extent;
-
-  double statusBarHeight() => mediaQuery.padding.top;
-
-  double bottomBarHeight() => mediaQuery.padding.bottom;
-}
-
 class XBox extends StatelessWidget {
   final double _width;
 
