@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:get_movies/core/api_wrapper.dart';
 import 'package:get_movies/core/models/models.dart';
-import 'package:get_movies/core/services/services.dart';
 import 'package:get_movies/core/urls.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,7 +30,7 @@ class MovieService {
       apiWrapper.data = movieList;
       apiWrapper.totalResults = decodedResponse['total_results'];
     } catch (e) {
-            print('${e.toString()} error hehre');
+      print('${e.toString()} error hehre');
       apiWrapper.error = true;
     }
 
@@ -39,7 +38,8 @@ class MovieService {
     return apiWrapper;
   }
 
-  Future<ApiWrapper> searchMovies({required String query, int page = 1}) async {
+  Future<ApiWrapper> searchMovies(
+      {required String query, required int page}) async {
     ApiWrapper apiWrapper = ApiWrapper(error: false);
 
     var queryParameters = {

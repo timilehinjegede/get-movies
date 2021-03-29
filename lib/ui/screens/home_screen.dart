@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_movies/core/controllers/movie_controller.dart';
 import 'package:get_movies/core/models/models.dart';
-import 'package:get_movies/core/services/movie_service.dart';
 import 'package:get_movies/ui/screens/movie_details_screen.dart';
 import 'package:get_movies/ui/screens/view_more_movies_screen.dart';
 import 'package:get_movies/ui/widgets/widgets.dart';
@@ -25,35 +24,62 @@ class HomeScreen extends StatelessWidget {
                   YBox(30),
 
                   // search movies
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      height: 55,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: whiteColor,
-                        ),
-                      ),
-                      child: Center(
-                        child: TextField(
-                          controller: _movieController.searchController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: whiteColor,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 20.0),
+                          child: Container(
+                            height: 55,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(
+                                color: whiteColor,
+                              ),
                             ),
-                            hintText: 'Search movies',
-                            hintStyle: TextStyle(
-                              fontSize: 14,
-                              color: whiteColor,
+                            child: Center(
+                              child: TextField(
+                                controller: _movieController.searchController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  prefixIcon: Icon(
+                                    Icons.search,
+                                    color: whiteColor,
+                                  ),
+                                  hintText: 'Search movies',
+                                  hintStyle: TextStyle(
+                                    fontSize: 14,
+                                    color: whiteColor,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+                      XBox(10),
+                      SizedBox(
+                        height: 55,
+                        child: TextButton(
+                          onPressed: () => movieController.searchMovies(
+                            _movieController.searchController.text.trim(),
+                            1,
+                          ),
+                          style: TextButton.styleFrom(
+                            backgroundColor: yellowColor,
+                            primary: whiteColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          child: Text(
+                            'Go',
+                          ),
+                        ),
+                      ),
+                      XBox(20),
+                    ],
                   ),
 
                   YBox(20),
@@ -102,7 +128,7 @@ class HomeScreen extends StatelessWidget {
 
                   // popular movies
                   HeaderInfo(
-                    title: 'Popular movies',
+                    title: 'Popular Movies',
                     subTitle: 'Popular movies',
                     onPressed: () {
                       Get.to(

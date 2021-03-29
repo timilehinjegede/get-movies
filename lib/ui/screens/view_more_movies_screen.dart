@@ -26,32 +26,36 @@ class ViewMoreMoviesScreen extends StatelessWidget {
           ),
           brightness: Brightness.dark,
         ),
-        body: SafeArea(
-          top: false,
-          child: NotificationListener<ScrollNotification>(
-            onNotification: _onScrollNotification,
-            child: GridView.builder(
-              padding: EdgeInsets.symmetric(
-                horizontal: 20.0,
-              ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.55,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-              ),
-              itemBuilder: (context, index) => MovieCard(
-                movie: movieList[index],
-                onTap: () => Get.to(
-                  () => MovieDetailsScreen(
-                    movie: movieList[index],
+        body: movieList.isEmpty
+            ? Center(
+                child: Text('No movies found'),
+              )
+            : SafeArea(
+                top: false,
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: _onScrollNotification,
+                  child: GridView.builder(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                    ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.55,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                    ),
+                    itemBuilder: (context, index) => MovieCard(
+                      movie: movieList[index],
+                      onTap: () => Get.to(
+                        () => MovieDetailsScreen(
+                          movie: movieList[index],
+                        ),
+                      ),
+                    ),
+                    itemCount: movieList.length,
                   ),
                 ),
               ),
-              itemCount: movieList.length,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -77,8 +81,13 @@ class ViewMoreMoviesScreen extends StatelessWidget {
       await movieController.getUpcomingMovies(++movieController.upcomingPage);
     } else if (movieCategory == 'Top Rated Movies') {
       await movieController.getTopRatedMovies(++movieController.topRatedPage);
-    } else {
+    } else if (movieCategory == 'Popular Movies') {
       await movieController.getPopularMovies(++movieController.popularPage);
+    } else {
+      await movieController.searchMovies(
+        movieCategory,
+        ++movieController.movieResultsPage,
+      );
     }
   }
 }

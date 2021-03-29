@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_movies/core/api_wrapper.dart';
-import 'package:get_movies/core/controllers/controllers.dart';
 import 'package:get_movies/core/models/models.dart';
 import 'package:get_movies/core/services/services.dart';
+import 'package:get_movies/ui/screens/view_more_movies_screen.dart';
 import 'package:get_movies/utils/utils.dart';
 
 class MovieController extends GetxController {
@@ -14,10 +14,12 @@ class MovieController extends GetxController {
   int topRatedPage = 1;
   int popularPage = 1;
   int upcomingPage = 1;
+  int movieResultsPage = 1;
 
   List<Movie> topRatedMovies = [];
   List<Movie> popularMovies = [];
   List<Movie> upcomingMovies = [];
+  List<Movie> searchMovieResults = [];
 
   @override
   void onInit() {
@@ -46,17 +48,52 @@ class MovieController extends GetxController {
     super.onClose();
   }
 
-  // Future<List<Movie>> searchMovies() async {
-  //   late ApiWrapper apiWrapper;
+  Future<void> searchMovies(String query, int page) async {
+    late ApiWrapper apiWrapper;
 
-  //   apiWrapper = await _movieService.searchMovies(query: 'query');
+    Get.dialog(
+      Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation(whiteColor),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+    apiWrapper = await _movieService.searchMovies(
+      query: query,
+      page: page,
+    );
 
-  //   if (!apiWrapper.error) {
-  //   } else {
-  //     // show snackbar
+    if (!apiWrapper.error) {
+      searchMovieResults = apiWrapper.data;
+      print('${apiWrapper.data} during searching movie');
+      Get.back();
 
-  //   }
-  // }
+      Get.to(
+        () => ViewMoreMoviesScreen(
+          movieList: searchMovieResults,
+          movieCategory: query,
+        ),
+      );
+    } else {
+      Get.back();
+
+      // show dialog
+      Get.defaultDialog(
+        title: 'Error Fecthing movies',
+        titleStyle: TextStyle(
+          color: blackColor,
+        ),
+        content: Text(
+          'An error occured, try again!',
+          style: TextStyle(
+            color: blackColor,
+          ),
+        ),
+      );
+    }
+    update();
+  }
 
   // get top rated movies
   Future<void> getTopRatedMovies(int page) async {

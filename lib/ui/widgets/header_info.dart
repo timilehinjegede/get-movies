@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get_movies/ui/screens/view_more_movies_screen.dart';
 import 'package:get_movies/utils/utils.dart';
 
 class HeaderInfo extends StatelessWidget {

@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_movies/core/models/models.dart';
@@ -17,8 +15,6 @@ class MovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return InkWell(
       onTap: onTap,
       highlightColor: Colors.transparent,
@@ -37,24 +33,33 @@ class MovieCard extends StatelessWidget {
                   color: greyColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: CachedNetworkImage(
-                  imageUrl:
-                      'https://image.tmdb.org/t/p/original${movie.posterPath!}',
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      Center(
-                    child: CircularProgressIndicator(
-                      value: downloadProgress.progress,
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Center(
-                    child: Icon(
-                      Icons.error,
-                      color: Colors.red,
-                      size: 30,
-                    ),
-                  ),
-                  fit: BoxFit.cover,
-                ),
+                child: movie.posterPath == null
+                    ? SizedBox.shrink()
+                    : CachedNetworkImage(
+                        imageUrl:
+                            'https://image.tmdb.org/t/p/original${movie.posterPath!}',
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) => Center(
+                          child: CircularProgressIndicator(
+                            value: downloadProgress.progress,
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Center(
+                          child: movie.posterPath == null
+                              ? Text(
+                                  'Poster not available',
+                                  style: TextStyle(
+                                    color: blackColor,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.error,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
+                        ),
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
             YBox(5),
