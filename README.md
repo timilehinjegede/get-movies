@@ -1,7 +1,16 @@
 # get_movies
 
-A new Flutter project.
+A Flutter app for fetching movies [top rated, popular and trending] and searching movies
 
+## Screenshots
+
+<img src="graphics/splash.png" width="400"> | <img src="graphics/home.png" width="400">
+
+<img src="graphics/view_more_top_rated.png" width="400"> | <img src="graphics/view_more_upcoming.png" width="400">
+
+<img src="graphics/search.png" width="400"> | <img src="graphics/search_movie_details.png" width="400">
+
+<img src="graphics/movie_details.png" width="400"> 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
