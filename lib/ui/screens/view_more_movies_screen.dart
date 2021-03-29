@@ -1,34 +1,42 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_movies/core/controllers/movie_controller.dart';
 import 'package:get_movies/core/models/models.dart';
 import 'package:get_movies/ui/screens/movie_details_screen.dart';
 import 'package:get_movies/ui/widgets/widgets.dart';
+import 'package:get_movies/utils/strings.dart';
+import 'package:get_movies/utils/utils.dart';
 
 class ViewMoreMoviesScreen extends StatelessWidget {
-  final List<Movie> movieList;
-  final String movieCategory;
+  final List<Movie>? movieList;
+  final String? movieCategory;
 
   const ViewMoreMoviesScreen({
     Key? key,
-    required this.movieList,
-    required this.movieCategory,
+    this.movieList,
+    this.movieCategory,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GetBuilder<MovieController>(
       init: MovieController(),
       builder: (movieController) => Scaffold(
         appBar: AppBar(
           title: Text(
-            movieCategory,
+            movieCategory!,
           ),
           brightness: Brightness.dark,
         ),
-        body: movieList.isEmpty
+        body: movieList!.isEmpty
             ? Center(
-                child: Text('No movies found'),
+                child: Text(
+                  'No movies found',
+                  style: theme.textTheme.headline6,
+                ),
               )
             : SafeArea(
                 top: false,
@@ -45,14 +53,14 @@ class ViewMoreMoviesScreen extends StatelessWidget {
                       mainAxisSpacing: 20,
                     ),
                     itemBuilder: (context, index) => MovieCard(
-                      movie: movieList[index],
+                      movie: movieList![index],
                       onTap: () => Get.to(
                         () => MovieDetailsScreen(
-                          movie: movieList[index],
+                          movie: movieList![index],
                         ),
                       ),
                     ),
-                    itemCount: movieList.length,
+                    itemCount: movieList!.length,
                   ),
                 ),
               ),
@@ -66,9 +74,9 @@ class ViewMoreMoviesScreen extends StatelessWidget {
       final max = notification.metrics.maxScrollExtent;
 
       if (before == max) {
-        print('loading more...');
+        log('loading more...');
         _loadMoreMovies();
-        print('loading more done');
+        log('loading more done');
       }
     }
     return false;
@@ -77,15 +85,19 @@ class ViewMoreMoviesScreen extends StatelessWidget {
   Future<void> _loadMoreMovies() async {
     MovieController movieController = MovieController.find;
 
-    if (movieCategory == 'Upcoming Movies') {
+    if (movieCategory == GetMoviesStrings.upcomingMovies) {
+      // get upcoming movies,next page
       await movieController.getUpcomingMovies(++movieController.upcomingPage);
-    } else if (movieCategory == 'Top Rated Movies') {
+    } else if (movieCategory == GetMoviesStrings.topRatedMovies) {
+      // get top rated movies, next page
       await movieController.getTopRatedMovies(++movieController.topRatedPage);
-    } else if (movieCategory == 'Popular Movies') {
+    } else if (movieCategory == GetMoviesStrings.popularMovies) {
+      // get popular movies, next page
       await movieController.getPopularMovies(++movieController.popularPage);
     } else {
+      // get search results movies, next page
       await movieController.searchMovies(
-        movieCategory,
+        movieCategory!,
         ++movieController.movieResultsPage,
       );
     }

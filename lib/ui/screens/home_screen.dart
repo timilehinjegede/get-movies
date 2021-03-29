@@ -9,9 +9,8 @@ import 'package:get_movies/ui/widgets/widgets.dart';
 import 'package:get_movies/utils/utils.dart';
 
 class HomeScreen extends StatelessWidget {
-  final MovieController _movieController =  Get.put<MovieController>(
-    MovieController()
-  );
+  final MovieController _movieController =
+      Get.put<MovieController>(MovieController());
   @override
   Widget build(BuildContext context) {
     return GetBuilder<MovieController>(
@@ -26,75 +25,21 @@ class HomeScreen extends StatelessWidget {
                   YBox(30),
 
                   // search movies
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 20.0),
-                          child: Container(
-                            height: 55,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(
-                                color: whiteColor,
-                              ),
-                            ),
-                            child: Center(
-                              child: TextField(
-                                controller: _movieController.searchController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  prefixIcon: Icon(
-                                    Icons.search,
-                                    color: whiteColor,
-                                  ),
-                                  hintText: 'Search movies',
-                                  hintStyle: TextStyle(
-                                    fontSize: 14,
-                                    color: whiteColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      XBox(10),
-                      SizedBox(
-                        height: 55,
-                        child: TextButton(
-                          onPressed: () => movieController.searchMovies(
-                            _movieController.searchController.text.trim(),
-                            1,
-                          ),
-                          style: TextButton.styleFrom(
-                            backgroundColor: yellowColor,
-                            primary: whiteColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          child: Text(
-                            'Go',
-                          ),
-                        ),
-                      ),
-                      XBox(20),
-                    ],
+                  _SearchMovieSection(
+                    movieController: _movieController,
                   ),
 
                   YBox(20),
 
                   // top rated movies
                   HeaderInfo(
-                    title: 'Top rated movies',
-                    subTitle: 'top rated movies',
-                    onPressed: () {
-                      Get.to(
-                        () => ViewMoreMoviesScreen(
+                    title: GetMoviesStrings.topRatedMovies,
+                    subTitle: 'View and check top rated movies',
+                    onTap: () {
+                      GetMoviesHelpers.navigateTo(
+                        ViewMoreMoviesScreen(
                           movieList: movieController.topRatedMovies,
-                          movieCategory: 'Top Rated Movies',
+                          movieCategory: GetMoviesStrings.topRatedMovies,
                         ),
                       );
                     },
@@ -109,13 +54,13 @@ class HomeScreen extends StatelessWidget {
 
                   // upcoming movies
                   HeaderInfo(
-                    title: 'Upcoming movies',
-                    subTitle: 'upcoming movies',
-                    onPressed: () {
-                      Get.to(
-                        () => ViewMoreMoviesScreen(
+                    title: GetMoviesStrings.upcomingMovies,
+                    subTitle: 'View and check new upcoming movies',
+                    onTap: () {
+                      GetMoviesHelpers.navigateTo(
+                        ViewMoreMoviesScreen(
                           movieList: movieController.upcomingMovies,
-                          movieCategory: 'Upcoming Movies',
+                          movieCategory: GetMoviesStrings.upcomingMovies,
                         ),
                       );
                     },
@@ -130,13 +75,13 @@ class HomeScreen extends StatelessWidget {
 
                   // popular movies
                   HeaderInfo(
-                    title: 'Popular Movies',
-                    subTitle: 'Popular movies',
-                    onPressed: () {
-                      Get.to(
-                        () => ViewMoreMoviesScreen(
+                    title: GetMoviesStrings.popularMovies,
+                    subTitle: 'View and check most popular movies',
+                    onTap: () {
+                      GetMoviesHelpers.navigateTo(
+                        ViewMoreMoviesScreen(
                           movieList: movieController.popularMovies,
-                          movieCategory: 'Popular Movies',
+                          movieCategory: GetMoviesStrings.popularMovies,
                         ),
                       );
                     },
@@ -151,6 +96,80 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SearchMovieSection extends StatelessWidget {
+  final MovieController movieController;
+
+  const _SearchMovieSection({
+    Key? key,
+    required this.movieController,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(left: 20.0),
+            child: Container(
+              height: 55,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(
+                  color: whiteColor,
+                ),
+              ),
+              child: Center(
+                child: TextField(
+                  controller: movieController.searchController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: whiteColor,
+                    ),
+                    hintText: 'Enter movie title',
+                    hintStyle: TextStyle(
+                      fontSize: 14,
+                      color: whiteColor,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        XBox(10),
+        SizedBox(
+          height: 55,
+          child: TextButton(
+            onPressed: () => movieController.searchMovies(
+              movieController.searchController.text.trim(),
+              1,
+            ),
+            style: TextButton.styleFrom(
+              backgroundColor: yellowColor,
+              primary: whiteColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: Text(
+              'Search',
+              style: theme.textTheme.bodyText1!.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+        XBox(20),
+      ],
     );
   }
 }
@@ -179,8 +198,8 @@ class _BuildMovieRow extends StatelessWidget {
                 children: [
                   MovieCard(
                     movie: movieList[index],
-                    onTap: () => Get.to(
-                      () => MovieDetailsScreen(
+                    onTap: () => GetMoviesHelpers.navigateTo(
+                      MovieDetailsScreen(
                         movie: movieList[index],
                       ),
                     ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_movies/core/api_wrapper.dart';
@@ -5,6 +7,7 @@ import 'package:get_movies/core/models/models.dart';
 import 'package:get_movies/core/services/services.dart';
 import 'package:get_movies/ui/screens/view_more_movies_screen.dart';
 import 'package:get_movies/utils/utils.dart';
+import 'package:http/http.dart' as http;
 
 class MovieController extends GetxController {
   // returns the found instance of the movie controller
@@ -35,16 +38,16 @@ class MovieController extends GetxController {
   @override
   void onInit() {
     // creating an instance of the movie service
-    _movieService = MovieService();
+    _movieService = MovieService(client: http.Client());
     // creating an instance of the search controller
     searchController = TextEditingController();
-    print('init');
+    log('init');
     super.onInit();
   }
 
   @override
   void onReady() {
-    print('ready');
+    log('ready');
     // get the top rated, popular and upcoming movies
     Future.wait(
       <Future>[
@@ -69,14 +72,7 @@ class MovieController extends GetxController {
     late ApiWrapper apiWrapper;
 
     // show a loading dialog while searching movies
-    Get.dialog(
-      Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation(whiteColor),
-        ),
-      ),
-      barrierDismissible: false,
-    );
+    GetMoviesHelpers.showLoadingDialog();
 
     // search movies
     apiWrapper = await _movieService.searchMovies(
@@ -87,33 +83,25 @@ class MovieController extends GetxController {
     if (!apiWrapper.error) {
       // assign the results/api data with the search movie results list
       searchMovieResults = apiWrapper.data;
-      print('${apiWrapper.data} during searching movie');
+      log('${apiWrapper.data} during searching movie');
       // dismiss the loading dialog
-      Get.back();
+      GetMoviesHelpers.popPage();
 
       // navigate to the view more movies screen to see the results of the searched movie
-      Get.to(
-        () => ViewMoreMoviesScreen(
+      GetMoviesHelpers.navigateTo(
+        ViewMoreMoviesScreen(
           movieList: searchMovieResults,
           movieCategory: query,
         ),
       );
     } else {
       // dismiss the loading dialog
-      Get.back();
+      GetMoviesHelpers.popPage();
 
       // show an error dialog
-      Get.defaultDialog(
-        title: 'Error Fecthing movies',
-        titleStyle: TextStyle(
-          color: blackColor,
-        ),
-        content: Text(
-          'An error occured, try again!',
-          style: TextStyle(
-            color: blackColor,
-          ),
-        ),
+      GetMoviesHelpers.showDefaultDialog(
+        title: 'Error!',
+        content: 'Error searching movie, try again.',
       );
     }
     update();
@@ -122,27 +110,27 @@ class MovieController extends GetxController {
   // get top rated movies
   Future<void> getTopRatedMovies(int page) async {
     ApiWrapper apiWrapper = await getMovie(MovieCategory.topRated, page);
-    // add the items to the top rated movies list 
-    topRatedMovies = topRatedMovies..addAll(apiWrapper.data);
-    print('$topRatedMovies here in top rated');
+    // add the items to the top rated movies list
+    if (!apiWrapper.error) topRatedMovies.addAll(apiWrapper.data);
+    log('$topRatedMovies here in top rated');
     update();
   }
 
   // get popular movies
   Future<void> getPopularMovies(int page) async {
     ApiWrapper apiWrapper = await getMovie(MovieCategory.popular, page);
-    // add the items to the popular movies list 
-    popularMovies = popularMovies..addAll(apiWrapper.data);
-    print('$popularMovies here in popular');
+    // add the items to the popular movies list
+    if (!apiWrapper.error) popularMovies.addAll(apiWrapper.data);
+    log('$popularMovies here in popular');
     update();
   }
 
   // get upcoming movies
   Future<void> getUpcomingMovies(int page) async {
     ApiWrapper apiWrapper = await getMovie(MovieCategory.upcoming, page);
-    // add the items to the upcoming movies list 
-    upcomingMovies = upcomingMovies..addAll(apiWrapper.data);
-    print('$upcomingMovies here in upcoming');
+    // add the items to the upcoming movies list
+    if (!apiWrapper.error) upcomingMovies.addAll(apiWrapper.data);
+    log('$upcomingMovies here in upcoming');
     update();
   }
 
@@ -152,14 +140,7 @@ class MovieController extends GetxController {
     late ApiWrapper apiWrapper;
 
     // show a loading dialog while fetching movies
-    Get.dialog(
-      Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation(whiteColor),
-        ),
-      ),
-      barrierDismissible: false,
-    );
+    GetMoviesHelpers.showLoadingDialog();
 
     switch (movieCategory) {
       // get top rated movies
@@ -186,7 +167,7 @@ class MovieController extends GetxController {
     }
 
     // dismiss the dialog
-    Get.back();
+    GetMoviesHelpers.popPage();
 
     // return the instance of the api wrapper
     return apiWrapper;

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:get_movies/core/api_wrapper.dart';
 import 'package:get_movies/core/models/models.dart';
@@ -12,6 +11,10 @@ enum MovieCategory { topRated, popular, upcoming }
 
 class MovieService {
 
+    final http.Client client;
+
+  MovieService({required this.client});
+
   // get movies based on categories [top rated, popular or upcoming]
   Future<ApiWrapper> getMovies(
       {required MovieCategory movieCategory, required int page}) async {
@@ -20,7 +23,7 @@ class MovieService {
     var uri = getUriFromMovieCategory(movieCategory, page);
 
     try {
-      var response = await http.get(uri);
+      var response = await client.get(uri);
       Map<String, dynamic> decodedResponse = jsonDecode(response.body);
 
       // movie list to hold the results of the movies retrieved based on category
@@ -32,18 +35,16 @@ class MovieService {
           Movie.fromJson(map),
         );
       }
-      print('${movieList.length} length of movie here');
 
       // assign the api wrapper data to the movie list
       apiWrapper.data = movieList;
       // get the total results of the search results
-      apiWrapper.totalResults = decodedResponse['total_results'];
+      apiWrapper.currentPage = decodedResponse['page'];
+      apiWrapper.totalPage = decodedResponse['total_pages'];
     } catch (e) {
-      print('${e.toString()} error hehre');
       apiWrapper.error = true;
     }
 
-    // log('${apiWrapper.data} when searching movies');
     return apiWrapper;
   }
 
@@ -63,12 +64,12 @@ class MovieService {
     var uri =
         Uri.https(ApiUrls.baseUrl, ApiUrls.searchMoviesUrl, queryParameters);
     try {
-      var response = await http.get(uri);
+      var response = await client.get(uri);
       Map<String, dynamic> decodedResponse = jsonDecode(response.body);
 
       // movie list to hold the search results
       List<Movie> movieList = [];
-      
+
       // add items to the movie list
       for (Map<String, dynamic> map in decodedResponse['results']) {
         movieList.add(
@@ -79,8 +80,8 @@ class MovieService {
       // assign the api wrapper data to the movie list
       apiWrapper.data = movieList;
       // get the total results of the search results
-      apiWrapper.totalResults = decodedResponse['total_results'];
-      log('$movieList when browsing movies');
+      apiWrapper.currentPage = decodedResponse['page'];
+      apiWrapper.totalPage = decodedResponse['total_pages'];
     } catch (e) {
       apiWrapper.error = true;
     }
@@ -105,7 +106,7 @@ class MovieService {
           queryParameters,
         );
         break;
-        // popular
+      // popular
       case MovieCategory.popular:
         uri = Uri.https(
           ApiUrls.baseUrl,
@@ -113,7 +114,7 @@ class MovieService {
           queryParameters,
         );
         break;
-        // upcoming
+      // upcoming
       case MovieCategory.upcoming:
         uri = Uri.https(
           ApiUrls.baseUrl,
