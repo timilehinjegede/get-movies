@@ -15,10 +15,11 @@ class MovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
-      highlightColor: Colors.transparent,
-      splashColor: Colors.transparent,
+      highlightColor: transparentColor,
+      splashColor: transparentColor,
       child: Container(
         height: 280,
         width: 140,
@@ -29,12 +30,24 @@ class MovieCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               child: Container(
                 height: 210,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: greyColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: movie.posterPath == null
-                    ? SizedBox.shrink()
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text(
+                            'Movie Poster not available',
+                            style: theme.textTheme.bodyText1!.copyWith(
+                              color: blackColor,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
                     : CachedNetworkImage(
                         imageUrl:
                             'https://image.tmdb.org/t/p/original${movie.posterPath!}',
@@ -45,18 +58,11 @@ class MovieCard extends StatelessWidget {
                           ),
                         ),
                         errorWidget: (context, url, error) => Center(
-                          child: movie.posterPath == null
-                              ? Text(
-                                  'Poster not available',
-                                  style: TextStyle(
-                                    color: blackColor,
-                                  ),
-                                )
-                              : Icon(
-                                  Icons.error,
-                                  color: Colors.red,
-                                  size: 30,
-                                ),
+                          child: Icon(
+                            Icons.error,
+                            color: redColor,
+                            size: 30,
+                          ),
                         ),
                         fit: BoxFit.cover,
                       ),
@@ -66,6 +72,10 @@ class MovieCard extends StatelessWidget {
             Text(
               movie.title!,
               overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyText1!.copyWith(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             YBox(5),
             Row(
@@ -89,6 +99,7 @@ class MovieCard extends StatelessWidget {
                 Text(
                   '${(movie.voteAverage / 2).floor().toString()}.0',
                   overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyText1,
                 ),
               ],
             ),
@@ -100,9 +111,11 @@ class MovieCard extends StatelessWidget {
                 Text(
                   movie.releaseDate!,
                   overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyText1,
                 ),
                 Text(
                   movie.originalLanguage!,
+                  style: theme.textTheme.bodyText1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],

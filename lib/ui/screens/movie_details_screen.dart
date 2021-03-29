@@ -2,15 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_movies/core/models/models.dart';
+import 'package:get_movies/ui/widgets/widgets.dart';
 import 'package:get_movies/utils/utils.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
-  final Movie movie;
+  final Movie? movie;
 
-  const MovieDetailsScreen({Key? key, required this.movie}) : super(key: key);
+  const MovieDetailsScreen({Key? key, this.movie}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,24 +24,37 @@ class MovieDetailsScreen extends StatelessWidget {
                 Container(
                   height: Get.height * 0.4,
                   color: greyColor,
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        'https://image.tmdb.org/t/p/original${movie.backdropPath!}',
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) => Center(
-                      child: CircularProgressIndicator(
-                        value: downloadProgress.progress,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Center(
-                      child: Icon(
-                        Icons.error,
-                        color: Colors.red,
-                        size: 30,
-                      ),
-                    ),
-                    fit: BoxFit.cover,
-                  ),
+                  child: movie!.backdropPath == null
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Movie Poster not available',
+                              style: theme.textTheme.bodyText1!.copyWith(
+                                color: blackColor,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl:
+                              'https://image.tmdb.org/t/p/original${movie!.backdropPath!}',
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                              value: downloadProgress.progress,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Center(
+                            child: Icon(
+                              Icons.error,
+                              color: redColor,
+                              size: 30,
+                            ),
+                          ),
+                          fit: BoxFit.cover,
+                        ),
                 ),
                 Positioned(
                   top: 40,
@@ -51,7 +66,7 @@ class MovieDetailsScreen extends StatelessWidget {
                       width: 35,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.black,
+                        color: blackColor,
                       ),
                       child: Icon(
                         Icons.arrow_back,
@@ -75,24 +90,34 @@ class MovieDetailsScreen extends StatelessWidget {
                           color: greyColor,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: CachedNetworkImage(
-                          imageUrl:
-                              'https://image.tmdb.org/t/p/original${movie.posterPath!}',
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Center(
-                            child: CircularProgressIndicator(
-                              value: downloadProgress.progress,
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => Center(
-                            child: Icon(
-                              Icons.error,
-                              color: Colors.red,
-                              size: 30,
-                            ),
-                          ),
-                          fit: BoxFit.cover,
-                        ),
+                        child: movie!.posterPath == null
+                            ? Center(
+                                child: Text(
+                                  'Movie Poster not available',
+                                  style: theme.textTheme.bodyText1!.copyWith(
+                                    color: blackColor,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            : CachedNetworkImage(
+                                imageUrl:
+                                    'https://image.tmdb.org/t/p/original${movie!.posterPath!}',
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) => Center(
+                                  child: CircularProgressIndicator(
+                                    value: downloadProgress.progress,
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Center(
+                                  child: Icon(
+                                    Icons.error,
+                                    color: redColor,
+                                    size: 30,
+                                  ),
+                                ),
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                   ),
@@ -102,116 +127,12 @@ class MovieDetailsScreen extends StatelessWidget {
           ),
           YBox(25),
           Expanded(
-            child: _MovieInformation(
-              movie: movie,
+            child: MovieSummary(
+              movie: movie!,
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _MovieInformation extends StatelessWidget {
-  final Movie movie;
-
-  const _MovieInformation({Key? key, required this.movie}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      children: [
-        Text(
-          'Original Title',
-        ),
-        Text(
-          movie.originalTitle!,
-        ),
-        YBox(5),
-        Text(
-          'Overview',
-        ),
-        Text(
-          movie.overview!,
-        ),
-        YBox(5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Movie ID',
-            ),
-            Text(
-              movie.id.toString(),
-            ),
-          ],
-        ),
-        YBox(5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Release Date',
-            ),
-            Text(
-              movie.releaseDate!,
-            ),
-          ],
-        ),
-        YBox(5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Original Language',
-            ),
-            Text(
-              movie.originalLanguage!,
-            ),
-          ],
-        ),
-        YBox(5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Total Vote Average',
-            ),
-            Text(
-              movie.voteAverage!.toString(),
-            ),
-          ],
-        ),
-        YBox(5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Ratings',
-            ),
-            Spacer(),
-            for (int i = 1; i < (movie.voteAverage / 2.floor()); i++)
-              Icon(
-                Icons.star,
-                color: yellowColor,
-                size: 14,
-              ),
-            movie.voteAverage / 2.floor() == 0
-                ? Icon(
-                    Icons.star,
-                    color: yellowColor,
-                    size: 14,
-                  )
-                : SizedBox.shrink(),
-            XBox(2),
-            Text(
-              '${(movie.voteAverage / 2).floor().toString()}.0',
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
